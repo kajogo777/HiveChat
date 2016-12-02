@@ -1,4 +1,4 @@
-package com.example.rana.chatencryption;
+package jawbreakergummybear.hivechat.core;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
@@ -75,12 +75,12 @@ public class Crypto {
         return publicKey;
     }
 
-    public byte[] encrypt(Key publicKey , String data){
+    public static byte[] encrypt(PublicKey pkey, String data){
         byte[] encodedBytes = null;
 
         try {
             Cipher c = Cipher.getInstance("ECIES", BouncyCastleProvider.PROVIDER_NAME);
-            c.init(Cipher.ENCRYPT_MODE, publicKey);
+            c.init(Cipher.ENCRYPT_MODE, pkey);
 
             encodedBytes = c.doFinal(data.getBytes());
 
@@ -101,12 +101,12 @@ public class Crypto {
         return encodedBytes;
     }
 
-    public byte[] decrypt(Key privateKey , byte[] encodedBytes){
+    public byte[] decrypt(byte[] encodedBytes){
         byte[] decodedBytes = null;
         try {
 
             Cipher c = Cipher.getInstance("ECIES", BouncyCastleProvider.PROVIDER_NAME);
-            c.init(Cipher.DECRYPT_MODE, privateKey);
+            c.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
             decodedBytes = c.doFinal(encodedBytes);
 
         } catch (NoSuchAlgorithmException e) {
