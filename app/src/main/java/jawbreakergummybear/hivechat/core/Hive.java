@@ -1,6 +1,7 @@
 package jawbreakergummybear.hivechat.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Random;
 
@@ -18,13 +19,20 @@ public class Hive implements TransportListener {
     private MainActivity activity;
     private long nodeId;
     private Transport transport;
+    private ChatClient cc;
 
-    private ArrayList<Link> links = new ArrayList<>();
+    private ArrayList<Link> links;
 
-    private ArrayList<String> messageBuffer;
+    public static final byte SHOUT = 1;
+    public static final byte INTRODUCE = 11;
+    public static final byte WHISPER = 111;
 
-    public Hive(MainActivity activity){
+
+    public Hive(MainActivity activity, ChatClient cc){
         this.activity = activity;
+        this.cc = cc;
+        links = new ArrayList<Link>();
+
         do
         {
             nodeId = new Random().nextLong();
@@ -63,23 +71,19 @@ public class Hive implements TransportListener {
         transport.stop();
     }
 
-    public ArrayList<Link> getLinks()
-    {
-        return links;
-    }
-
-    public ArrayList<String> getMessageBuffer()
-    {
-        return messageBuffer;
-    }
-
-    public void broadcast(String message)
+    public void broadcast(byte[] data, byte type)
     {
         if(links.isEmpty())
             return;
 
+        byte[] message = new byte[data.length + 1];
+
+        message[0] = type;
+
+        for(int i = 0; i < data.length; i++) message[i+1] = data[i];
+
         for(Link link : links)
-            link.sendFrame(message.getBytes());
+            link.sendFrame(message);
     }
 
     @Override
@@ -99,6 +103,19 @@ public class Hive implements TransportListener {
 
     @Override
     public void transportLinkDidReceiveFrame(Transport transport, Link link, byte[] bytes) {
-        messageBuffer.add(new String(bytes));
+        byte type = bytes[0];
+        byte[] data = Arrays.copyOfRange(bytes, 1, bytes.length);
+
+        switch(type){
+            case SHOUT:
+                cc.recievedPublicMessage(new String(data));
+                break;
+            case WHISPER:
+                cc.recievedPrivateMessage(data);
+                break;
+            case INTRODUCE:
+                cc.newPeer(data);
+                break;
+        }
     }
 }
