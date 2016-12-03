@@ -29,14 +29,15 @@ public class ChatClient {
         hive = new Hive(activity, this);
 
         hive.attach();
-        hive.broadcast(Crypto.encodeKey(myCrypto.keyPair.getPublic()), Hive.INTRODUCE);
     }
 
     public void sendPublicMessage(String message){
+        hive.broadcast(Crypto.encodeKey(myCrypto.keyPair.getPublic()), Hive.INTRODUCE);
         hive.broadcast(message.getBytes(), Hive.SHOUT);
     }
 
     public void sendPrivateMessage(Peer p, String message){
+        hive.broadcast(Crypto.encodeKey(myCrypto.keyPair.getPublic()), Hive.INTRODUCE);
         hive.broadcast(encryptMessageTo(p, getMyName() + "$$$" + message), Hive.WHISPER);
     }
 
@@ -92,7 +93,13 @@ public class ChatClient {
     }
 
     public void newPeer(byte[] peer){
-        peers.add(new Peer(peer));
+        Peer temp = new Peer(peer);
+        boolean found = false;
+        for(Peer p : peers)
+            if(p.name.equals(temp.name))
+                found = true;
+        if(!found)
+            peers.add(temp);
     }
 
     public void close(){
