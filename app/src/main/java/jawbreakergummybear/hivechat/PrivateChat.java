@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import jawbreakergummybear.hivechat.core.ChatClient;
+import jawbreakergummybear.hivechat.core.ChatMessage;
 
 /**
  * Created by Omar on 12/2/16.
@@ -53,22 +54,25 @@ public class PrivateChat extends AppCompatActivity {
         });
     }
     public  void populateMessages(){
-
         for(int i=0;i<myClient.getInbox().size();i++){
             if(name.equals(myClient.getInbox().get(i).getFrom())){
-                TextView message = new TextView(this);
-                LinearLayout linearLayout = new LinearLayout(this);
-                linearLayout.setOrientation(LinearLayout.VERTICAL);
-                LinearLayout parent = (LinearLayout) findViewById(R.id.layout2);
-                linearLayout.setPadding(0,60,0,0);
-                parent.addView(linearLayout);
-                message.setText((CharSequence) "     "+ myClient.getInbox().get(i).getText());
-                message.setBackground(getResources().getDrawable(R.drawable.rounded_corner1));
-                message.setTextColor(Color.BLACK);
-                message.setLayoutParams(new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT));
-                message.setPadding(0,30,0,30);
-                linearLayout.addView(message);
+                newMessage(myClient.getInbox().get(i));
             }
         }
+    }
+
+    public void newMessage(ChatMessage cm){
+        TextView message = new TextView(this);
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout parent = (LinearLayout) findViewById(R.id.layout2);
+        linearLayout.setPadding(0,60,0,0);
+        parent.addView(linearLayout);
+        message.setText((CharSequence) "     "+ cm.getText());
+        message.setBackground(getResources().getDrawable(R.drawable.rounded_corner1));
+        message.setTextColor(Color.BLACK);
+        message.setLayoutParams(new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT));
+        message.setPadding(0,30,0,30);
+        linearLayout.addView(message);
     }
 }
