@@ -109,52 +109,8 @@ public class ChatClient {
     public ArrayList<ChatMessage> getInbox() {
         return inbox;
     }
-}
-
-class Peer{
-    public PublicKey pKey;
-    public String name;
-
-    public Peer(byte[] key){
-        pKey = Crypto.decodeKey(key);
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-            byte[] thedigest = md.digest(key);
-            name = Base64.encodeToString(thedigest, Base64.DEFAULT);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
-
-}
-
-class ChatMessage{
-    private String from;
-    private String text;
-
-    public ChatMessage(String text){
-        this.from = "PUBLIC";
-        this.text = text;
-    }
-    public ChatMessage(String from, String text){
-        this.from = from;
-        this.text = text;
-    }
-
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public ArrayList<Peer> getPeers() {
+        return peers;
     }
 }
+
